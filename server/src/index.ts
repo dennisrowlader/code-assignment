@@ -6,6 +6,7 @@ import Hapi, { Server } from '@hapi/hapi';
 import HapiSwagger from 'hapi-swagger';
 import Inert from '@hapi/inert';
 import Vision from '@hapi/vision';
+import Joi from 'joi';
 
 import { IncomingMessage, ReturnMessage } from './models/message';
 import { EnvVariables } from './models/environment';
@@ -20,8 +21,8 @@ export const init = async () => {
     port: env.PORT || 30000,
     host: 'localhost',
     routes: {
-      cors: true
-    }
+      cors: true,
+    },
   });
 
   // Register swagger plugins
@@ -33,10 +34,10 @@ export const init = async () => {
       options: {
         info: {
           title: 'Code Assignment API Documentation',
-          version: '1.0.0'
-        }
-      }
-    }
+          version: '1.0.0',
+        },
+      },
+    },
   ]);
 
   // Routes
@@ -48,8 +49,8 @@ export const init = async () => {
     },
     options: {
       tags: ['api'],
-      description: 'Returns a greeting message'
-    }
+      description: 'Returns a greeting message',
+    },
   });
 
   server.route({
@@ -57,39 +58,60 @@ export const init = async () => {
     path: '/ping',
     handler: (request, h) => {
       const payload = request.payload as IncomingMessage;
-      const environment = process.env.ENV;
-      const version = process.env.VERSION;
-      if (payload.message !== '') {
+      if (request.query.mock && request.query.mock === true) {
         const message: ReturnMessage = {
           message: payload.message,
           timestamp: Date.now(),
           env: env.ENV,
-          version: env.VERSION
-        }
+          version: env.VERSION,
+        };
         return h.response(message).code(200);
-      }
-      else {
-        return h.response({error: "You must enter a message"}).code(400);
+      } else {
+        // Call postman echo
+        return h;
       }
     },
     options: {
       tags: ['api'],
-      description: 'Return the user message with timestamp, environment, and version'
-    }
+      description:
+        'Return the user message with timestamp, environment, and version',
+      validate: {
+        query: Joi.object({
+          mock: Joi.boolean().optional(),
+        }),
+        payload: Joi.object({
+          message: Joi.string().required().min(1).max(19).messages({
+            'string.base': 'Message must be a string',
+            'string.required': 'You must enter a message',
+            'string.min': 'Message must be at least {#limit} characters',
+            'string.max': 'Message must be at most {#limit} characters',
+          }),
+        }),
+        failAction: (request, h, error) => {
+          return h
+            .response({ message: 'Validation failed', errors: error?.message })
+            .code(400);
+        },
+      },
+    },
   });
 
   return server;
 };
 
 export const start = async () => {
-  console.log(`Server running on ${server.settings.host}:${server.settings.port}`);
+  console.log(
+    `Server running on ${server.settings.host}:${server.settings.port}`
+  );
   server.start();
-}
+};
 
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', err => {
   console.error('unhandledRejection');
   console.error(err);
   process.exit(1);
 });
 
-init().then(() => start()).catch((err) => console.error('Error while starting the server', err));
+init()
+  .then(() => start())
+  .catch(err => console.error('Error while starting the server', err));
