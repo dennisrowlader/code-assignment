@@ -3,6 +3,9 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import Hapi, { Server } from '@hapi/hapi';
+import HapiSwagger from 'hapi-swagger';
+import Inert from '@hapi/inert';
+import Vision from '@hapi/vision';
 
 import { IncomingMessage, ReturnMessage } from './models/message';
 import { EnvVariables } from './models/environment';
@@ -21,13 +24,31 @@ export const init = async () => {
     }
   });
 
+  // Register swagger plugins
+  await server.register([
+    Inert,
+    Vision,
+    {
+      plugin: HapiSwagger,
+      options: {
+        info: {
+          title: 'Code Assignment API Documentation',
+          version: '1.0.0'
+        }
+      }
+    }
+  ]);
+
   // Routes
   server.route({
     method: 'GET',
     path: '/',
     handler: (request, h) => {
-      console.log(request.query.test);
       return 'Hello World';
+    },
+    options: {
+      tags: ['api'],
+      description: 'Returns a greeting message'
     }
   });
 
@@ -50,6 +71,10 @@ export const init = async () => {
       else {
         return h.response({error: "You must enter a message"}).code(400);
       }
+    },
+    options: {
+      tags: ['api'],
+      description: 'Return the user message with timestamp, environment, and version'
     }
   });
 
