@@ -38,21 +38,22 @@ export const init = async () => {
       const payload = request.payload as IncomingMessage;
       const environment = process.env.ENV;
       const version = process.env.VERSION;
-      console.log('environment and version are ' + environment + ' and ' + version);
-      const message: ReturnMessage = {
-        message: payload.message,
-        timestamp: Date.now(),
-        env: env.ENV,
-        version: env.VERSION
+      if (payload.message !== '') {
+        const message: ReturnMessage = {
+          message: payload.message,
+          timestamp: Date.now(),
+          env: env.ENV,
+          version: env.VERSION
+        }
+        return h.response(message).code(200);
       }
-      return message;
+      else {
+        return h.response({error: "You must enter a message"}).code(400);
+      }
     }
   });
 
   return server;
-
-  // await server.start();
-  // 
 };
 
 export const start = async () => {

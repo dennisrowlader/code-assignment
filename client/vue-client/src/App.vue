@@ -9,11 +9,16 @@
     <br>
     <hr>
     <br>
+    <div v-if="message !== ''">
     <h3>Results:</h3>
     <p>Message: {{ message }}</p>
     <p>Timestamp: {{ timestamp }}</p>
     <p>Environment: {{ environment }}</p>
-    <p>Version: {{ version }}</p>
+    <p>Version: {{ version }}</p></div>
+    <div v-if="error !== ''">
+      <h3>Error:</h3>
+      <p>{{ error }}</p>
+    </div>
   </main>
 </template>
 
@@ -24,12 +29,15 @@ export default {
       message: '',
       timestamp: '',
       environment: '',
-      version: ''
+      version: '',
+      error: ''
     };
   },
   methods: {
     sendMessage() {
       const enteredMessage = this.$refs.messageInput.value;
+
+      this.clearOutput();
 
       const response = fetch('http://localhost:30000/ping', {
         method: 'POST',
@@ -40,6 +48,11 @@ export default {
           message: enteredMessage
         })
       }).then((response) => {
+        if (!response.ok) {
+          response.json().then((data) => {
+            this.error = data.error;
+          });
+        } else {
         response.json().then((data) => {
           console.log('data => ', data);
           this.message = data.message;
@@ -47,7 +60,18 @@ export default {
           this.environment = data.env,
           this.version = data.version
         });
+      }
+      }).catch((err) => {
+        console.log('err => ', err);
+        this.error = err.message;
       });
+    },
+    clearOutput() {
+      this.message = '';
+      this.timestamp = '';
+      this.environment = '';
+      this.version = '';
+      this.error = '';
     }
   }
 }
