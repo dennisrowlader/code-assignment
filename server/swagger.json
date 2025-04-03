@@ -1,0 +1,37 @@
+{
+  "basePath": "/",
+  "info": { "title": "Code Assignment API Documentation", "version": "1.0.0" },
+  "swagger": "2.0",
+  "host": "localhost:30000",
+  "schemes": ["http"],
+  "tags": [],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Returns a greeting message",
+        "operationId": "get",
+        "tags": [""],
+        "responses": {
+          "default": {
+            "schema": { "type": "string" },
+            "description": "Successful"
+          }
+        }
+      }
+    },
+    "/ping": {
+      "post": {
+        "summary": "Return the user message with timestamp, environment, and version",
+        "operationId": "postPing",
+        "tags": ["ping"],
+        "responses": {
+          "default": {
+            "schema": { "type": "string" },
+            "description": "Successful"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {}
+}
