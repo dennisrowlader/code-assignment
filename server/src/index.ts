@@ -56,7 +56,7 @@ export const init = async () => {
   server.route({
     method: 'POST',
     path: '/ping',
-    handler: (request, h) => {
+    handler: async(request, h) => {
       const payload = request.payload as IncomingMessage;
       if (request.query.mock && request.query.mock === true) {
         const message: ReturnMessage = {
@@ -68,7 +68,17 @@ export const init = async () => {
         return h.response(message).code(200);
       } else {
         // Call postman echo
-        return h;
+        const postmanUrl = `https://postman-echo.com/get?message=${payload.message}`;
+        try {
+          const response = await fetch(postmanUrl);
+          console.log('response => ', response);
+          const data = await response.json();
+          console.log('data => ', data);
+          return h.response(data).code(200);
+        } catch (e) {
+          console.error('Error calling Postman: ', e);
+          return h.response('Error calling Postman: ' + e).code(500);
+        }
       }
     },
     options: {
