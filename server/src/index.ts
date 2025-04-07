@@ -71,10 +71,17 @@ export const init = async () => {
         const postmanUrl = `https://postman-echo.com/get?message=${payload.message}`;
         try {
           const response = await fetch(postmanUrl);
-          console.log('response => ', response);
+          // console.log('response => ', response);
           const data = await response.json();
-          console.log('data => ', data);
-          return h.response(data).code(200);
+          // console.log('data => ', data);
+          const message: ReturnMessage = {
+            postmanEcho: JSON.stringify(data),
+            timestamp: Date.now(),
+            env: env.ENV,
+            version: env.VERSION
+          };
+          console.log('h.response => ', h.response(message));
+          return h.response(message).code(200);
         } catch (e) {
           console.error('Error calling Postman: ', e);
           return h.response('Error calling Postman: ' + e).code(500);
