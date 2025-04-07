@@ -3,7 +3,8 @@ export interface IncomingMessage {
 }
 
 export interface ReturnMessage {
-  message: string,
+  message?: string,
+  postmanEcho?: string,
   timestamp: number,
   env: string,
   version: string
