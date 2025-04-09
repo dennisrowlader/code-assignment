@@ -107,7 +107,8 @@ export const init = async () => {
         failAction: (request, h, error) => {
           return h
             .response({ message: 'Validation failed', errors: error?.message })
-            .code(400);
+            .code(400)
+            .takeover();
         },
       },
     },
