@@ -3,7 +3,12 @@
     <h1>Welcome</h1>
     <h2>Press the button below:</h2>
     <form @submit.prevent="sendMessage">
+      <label for="message">Message: </label>
       <input type="text" name="message" id="message" v-model="message" />
+      <br />
+      <label for="mock">Mock the response: </label>
+      <input type="checkbox" name="mock" id="mock" v-model="isMock" checked />
+      <br />
       <button type="submit">Send message</button>
       <span v-if="isInvalidInput">{{ invalidInputMsg }}</span>
     </form>
@@ -19,7 +24,8 @@
     </div>
     <div v-if="showError">
       <h3>Error:</h3>
-      <p>{{ error }}</p>
+      <p>{{ errorMessage }}</p>
+      <p>{{ errors }}</p>
     </div>
   </main>
 </template>
@@ -32,11 +38,13 @@ export default {
       timestamp: '',
       environment: '',
       version: '',
-      error: '',
+      errors: '',
+      errorMessage: '',
       showResults: false,
       showError: false,
       isInvalidInput: false,
       invalidInputMsg: '',
+      isMock: true,
     }
   },
   methods: {
@@ -45,8 +53,10 @@ export default {
       this.showResults = false
       this.isInvalidInput = false
       this.validateInput(this.message)
+      console.log('this.isMock => ', this.isMock);
+      const apiURL = this.isMock ? 'http://localhost:30000/ping?mock=true' : 'http://localhost:30000/ping?mock=false';
       if (!this.isInvalidInput) {
-        const response = fetch('http://localhost:30000/ping', {
+        const response = fetch(apiURL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -58,12 +68,15 @@ export default {
           .then((response) => {
             if (!response.ok) {
               response.json().then((data) => {
-                this.error = data.error
+                console.log('data => ', data);
+                this.errorMessage = data.message;
+                this.errors = data.errors
                 this.showError = true
               })
             } else {
               response.json().then((data) => {
-                this.message = data.message
+                console.log('data => ', data);
+                this.message = data.postmanEcho ? data.postmanEcho : data.message
                 this.timestamp = data.timestamp
                 ;(this.environment = data.env), (this.version = data.version)
                 this.showResults = true
