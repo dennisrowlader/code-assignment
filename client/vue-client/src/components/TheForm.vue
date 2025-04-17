@@ -38,8 +38,7 @@ export default {
       this.showResults = false
       this.isInvalidInput = false
       this.validateInput(this.message)
-      console.log('this.isMock => ', this.isMock)
-      const apiURL = this.isMock
+      const apiURL = this.messageResponse.isMock
         ? 'http://localhost:30000/ping?mock=true'
         : 'http://localhost:30000/ping?mock=false'
       if (!this.isInvalidInput) {
@@ -55,15 +54,12 @@ export default {
           .then((response) => {
             if (!response.ok) {
               response.json().then((data) => {
-                console.log('data => ', data)
                 this.errorMessage = data.message
                 this.errors = data.errors
                 this.showError = true
               })
             } else {
               response.json().then((data) => {
-                console.log('data => ', data)
-                console.log('this.message => ', this.message)
                 this.messageResponse = JSON.stringify({
                   isMock: data.message ? true : false,
                   responseMessage: data.postmanEcho ? data.postmanEcho : data.message,

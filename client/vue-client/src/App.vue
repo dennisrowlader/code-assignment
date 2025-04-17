@@ -30,12 +30,13 @@ export default {
   },
   methods: {
     processResponse(data) {
+      const d = JSON.parse(data);
       this.messageResponse = {
-        isMock: data.isMock,
-        responseMessage: data.responseMessage,
-        timestamp: data.timestamp,
-        environment: data.environment,
-        version: data.version
+        isMock: d.isMock,
+        responseMessage: d.responseMessage,
+        timestamp: d.timestamp,
+        environment: d.environment,
+        version: d.version,
       }
     },
   },

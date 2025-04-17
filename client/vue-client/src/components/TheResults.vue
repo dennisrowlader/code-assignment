@@ -1,13 +1,13 @@
 <template>
   <mock-results
-    v-if="response.isMock"
+    v-if="checkIsMock"
     :message="response.responseMessage"
     :timestamp="response.timestamp"
     :environment="response.environment"
     :version="response.version"
   ></mock-results>
   <postman-results
-    v-else-if="!response.isMock && response.responseMessage"
+    v-else-if="!checkIsMock && checkMessageExists"
     :message="response.responseMessage"
     :timestamp="response.timestamp"
     :environment="response.environment"
@@ -25,5 +25,13 @@ export default {
     PostmanResults,
   },
   props: ['response'],
+  computed: {
+    checkIsMock() {
+      return this.response.isMock
+    },
+    checkMessageExists() {
+      return this.response.responseMessage
+    }
+  }
 }
 </script>
