@@ -15,10 +15,21 @@
 
 <script>
 export default {
+  emits: ['message-response'],
   data() {
     return {
-      message: '',
-      isMock: true
+      messageResponse: {
+        isMock: true,
+        responseMessage: '',
+        timestamp: '',
+        environment: '',
+        version: ''
+      }
+    }
+  },
+  provide() {
+    return {
+      response: this.messageResponse
     }
   },
   methods: {
@@ -52,17 +63,23 @@ export default {
             } else {
               response.json().then((data) => {
                 console.log('data => ', data)
-                this.message = data.postmanEcho ? data.postmanEcho : data.message
-                this.timestamp = data.timestamp
-                ;(this.environment = data.env), (this.version = data.version)
-                this.showResults = true
+                console.log('this.message => ', this.message)
+                this.messageResponse = JSON.stringify({
+                  isMock: data.message ? true : false,
+                  responseMessage: data.postmanEcho ? data.postmanEcho : data.message,
+                  timestamp: data.timestamp,
+                  environment: data.env,
+                  version: data.version
+                });
+                this.$emit('message-response', this.messageResponse)
               })
             }
           })
           .catch((err) => {
             console.log('err => ', err)
-            this.error = err.message
-            this.showError = true
+            return this.messageResponse = JSON.stringify({
+              error: err.message
+            });
           })
       }
     },

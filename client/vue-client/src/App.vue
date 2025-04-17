@@ -1,25 +1,44 @@
 <template>
   <main>
-    <the-form></the-form>
+    <the-form @message-response="processResponse"></the-form>
     <br />
     <hr />
     <br />
-    <mock-results></mock-results>
-    <postman-results></postman-results>
+    <the-results :response="messageResponse"></the-results>
   </main>
 </template>
 
 <script>
-import MockResults from './components/MockResults.vue';
-import PostmanResults from './components/PostmanResults.vue';
-import TheForm from './components/TheForm.vue';
+import TheForm from './components/TheForm.vue'
+import TheResults from './components/TheResults.vue'
 
 export default {
   components: {
     TheForm,
-    MockResults,
-    PostmanResults
-  }
+    TheResults,
+  },
+  data() {
+    return {
+      messageResponse: {
+        isMock: true,
+        responseMessage: '',
+        timestamp: '',
+        environment: '',
+        version: '',
+      },
+    }
+  },
+  methods: {
+    processResponse(data) {
+      this.messageResponse = {
+        isMock: data.isMock,
+        responseMessage: data.responseMessage,
+        timestamp: data.timestamp,
+        environment: data.environment,
+        version: data.version
+      }
+    },
+  },
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
-  <div v-if="showResults">
-    <h3>Results:</h3>
+  <div>
+    <h3>Mock Results:</h3>
     <p>Message: {{ message }}</p>
     <p>Timestamp: {{ timestamp }}</p>
     <p>Environment: {{ environment }}</p>
@@ -15,16 +15,17 @@
 
 <script>
 export default {
-  data() {
-    return {
-      message: '',
-      timestamp: '',
-      environment: '',
-      version: '',
-      errorMessage: '',
-      errors: '',
-      showError: false,
-    }
-  },
+  // data() {
+  //   return {
+  //     message: '',
+  //     timestamp: '',
+  //     environment: '',
+  //     version: '',
+  //     errorMessage: '',
+  //     errors: '',
+  //     showError: false,
+  //   }
+  // },
+  props: ['message', 'timestamp', 'environment', 'version', 'errorMessage', 'errors', 'showError'],
 }
 </script>
